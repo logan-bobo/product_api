@@ -75,9 +75,9 @@ def create_supplier() -> Response:
     return make_response(jsonify(message=f"supplier {request_data['name']} created"), 200)
 
 
-# Read supplier
+# Read suppliers
 @app.route('/v1/suppliers', methods=["GET"])
-def read_suppliers():  # -> Response:
+def read_suppliers() -> Response:
     """
     Read all suppliers that are registered in JSON format.
     {
@@ -100,3 +100,30 @@ def read_suppliers():  # -> Response:
         suppliers["suppliers"][supplier.id]: str = {"name": supplier.name}
 
     return make_response(suppliers, 200)
+
+
+# Read an individual supplier
+@app.route('/v1/suppliers/<int:supplier_id>')
+def read_supplier(supplier_id: int) -> Response:
+    """
+    Read an individual supplier based on ID and be returned information about that supplier in JSON format
+    {
+        "1": {
+            name: "foo"
+        }
+    }
+    :return: Response
+    """
+
+    supplier_id: int = request.view_args['supplier_id']
+
+    supplier_data: Supplier = db.session.scalar(db.select(Supplier).where(Supplier.id == supplier_id))
+
+    supplier = {
+        supplier_data.id:
+            {
+                "name": supplier_data.name
+            }
+    }
+
+    return make_response(supplier, 200)
