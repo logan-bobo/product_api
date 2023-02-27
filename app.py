@@ -2,6 +2,7 @@ import json
 
 from flask import Flask, jsonify, Response, make_response, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.engine import Result, ScalarResult
 
 # Instantiate Flask and SQLAlchemy
 app = Flask(__name__)
@@ -48,14 +49,20 @@ def health() -> Response:
     return make_response(jsonify(status="healthy"), 200)
 
 
+# Create suppliers
 @app.route('/v1/suppliers', methods=["POST"])
 def create_supplier() -> Response:
+    """
+    Create a supplier by name with a POST reqeust containing JSON data in the following format.
+    {
+        "name":"foo"
+    }
+    :return: Response
+    """
     request_data: json = request.get_json()
 
-    print(request_data)
-
     if "name" not in request_data:
-        return make_response(jsonify(status="error", message="supplier name not specified"), 400)
+        return make_response(jsonify(message="supplier name not specified"), 400)
 
     new_supplier = Supplier(
         name = request_data["name"]
@@ -65,4 +72,31 @@ def create_supplier() -> Response:
 
     db.session.commit()
 
-    return make_response(jsonify(status="success", message=f"supplier {request_data['name']} created"), 200)
+    return make_response(jsonify(message=f"supplier {request_data['name']} created"), 200)
+
+
+# Read supplier
+@app.route('/v1/suppliers', methods=["GET"])
+def read_suppliers():  # -> Response:
+    """
+    Read all suppliers that are registered in JSON format.
+    {
+       "suppliers":{
+          "1":{
+             "name":"foo"
+          },
+          "2":{
+             "name":"bar"
+          }
+       }
+    }
+    :return: Response
+    """
+    supplier_data: ScalarResult = db.session.scalars(db.select(Supplier).order_by(Supplier.id))
+
+    suppliers: dict = {"suppliers": {}}
+
+    for supplier in supplier_data:
+        suppliers["suppliers"][supplier.id]: str = {"name": supplier.name}
+
+    return make_response(suppliers, 200)
