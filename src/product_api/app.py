@@ -2,7 +2,7 @@ import json
 
 from flask import Flask, jsonify, Response, make_response, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.engine import Result, ScalarResult
+from sqlalchemy.engine import ScalarResult
 
 # Instantiate Flask and SQLAlchemy
 app = Flask(__name__)
@@ -44,7 +44,7 @@ with app.app_context():
     db.create_all()
 
 
-@app.route('/v1/health', methods=["POST"])
+@app.route('/v1/health', methods=["GET"])
 def health() -> Response:
     return make_response(jsonify(status="healthy"), 200)
 
@@ -81,14 +81,14 @@ def read_suppliers() -> Response:
     """
     Read all suppliers that are registered in JSON format.
     {
-       "suppliers":{
-          "1":{
-             "name":"foo"
-          },
-          "2":{
-             "name":"bar"
-          }
-       }
+    "suppliers":{
+        "1":{
+            "name":"foo"
+        },
+        "2":{
+            "name":"bar"
+        }
+    }
     }
     :return: Response
     """
@@ -106,7 +106,7 @@ def read_suppliers() -> Response:
 @app.route('/v1/suppliers/<int:supplier_id>')
 def read_supplier(supplier_id: int) -> Response:
     """
-    Read an individual supplier based on ID and be returned information about that supplier in JSON format
+    Read an individual supplier based on ID and be returned information about that supplier in JSON format.
     {
         "1": {
             name: "foo"
