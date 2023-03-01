@@ -49,7 +49,6 @@ def health() -> Response:
     return make_response(jsonify(status="healthy"), 200)
 
 
-# Create suppliers
 @app.route('/v1/suppliers', methods=["POST"])
 def create_supplier() -> Response:
     """
@@ -75,7 +74,6 @@ def create_supplier() -> Response:
     return make_response(jsonify(message=f"supplier {request_data['name']} created"), 200)
 
 
-# Read suppliers
 @app.route('/v1/suppliers', methods=["GET"])
 def read_suppliers() -> Response:
     """
@@ -89,7 +87,6 @@ def read_suppliers() -> Response:
             "name":"bar"
         }
     }
-    }
     :return: Response
     """
     supplier_data: ScalarResult = db.session.scalars(db.select(Supplier).order_by(Supplier.id))
@@ -102,7 +99,6 @@ def read_suppliers() -> Response:
     return make_response(suppliers, 200)
 
 
-# Read an individual supplier
 @app.route('/v1/suppliers/<int:supplier_id>')
 def read_supplier(supplier_id: int) -> Response:
     """
