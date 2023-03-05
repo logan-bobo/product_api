@@ -1,6 +1,6 @@
 import pytest
 
-from src.product_api.app import app, Supplier, Product, Inventory, StoredInventory
+from product_api.app import Inventory, Product, StoredInventory, Supplier, app
 
 API_VERSION = "v1"
 

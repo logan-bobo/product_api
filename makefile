@@ -12,3 +12,13 @@ test-unit:
 
 test-integration:
 	python -m pytest src/tests/integration/
+
+lint:
+	black . --diff --check
+	isort . --profile black --check --diff
+	mypy .
+	pylint .
+
+fmt:
+	black .
+	isort . --profile black
