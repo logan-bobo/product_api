@@ -12,3 +12,5 @@ test-unit:
 
 test-integration:
 	python -m pytest src/tests/integration/
+
+lint:
