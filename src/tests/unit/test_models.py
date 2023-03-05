@@ -1,4 +1,3 @@
-
 def test_new_supplier(new_supplier):
     """
     GIVEN a Supplier model

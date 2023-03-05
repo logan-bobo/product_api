@@ -14,3 +14,12 @@ test-integration:
 	python -m pytest src/tests/integration/
 
 lint:
+	black src --diff --check
+	isort src --profile black --check --diff
+	black src --diff --check
+	mypy src
+	pylint src
+
+fmt:
+	black src
+	isort src --profile black
