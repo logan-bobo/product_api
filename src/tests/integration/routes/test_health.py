@@ -1,4 +1,4 @@
-from src.tests.conftest import API_VERSION
+from tests.conftest import API_VERSION
 
 
 def test_health_endpoint_returns_desired_message(client):
