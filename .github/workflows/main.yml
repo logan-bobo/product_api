@@ -13,7 +13,7 @@ jobs:
 
     steps:
         - name: Placeholder for build
-          run: echo "This stage will set up python and install dependencies that will be cahced across all jobs"
+          run: echo "This stage will set up python and install dependencies that will be cached across all jobs"
   
   lint:
     name: lint
@@ -63,21 +63,3 @@ jobs:
     steps:
         - name: Placeholder for integration test
           run: echo "placeholder for integration test"
-          
-  deploy-staging:
-    name: deploy-staging
-    runs-on: ubuntu-latest
-    needs: [integration-test]
-    
-    steps:
-        - name: placeholder for staging deployment
-          run: echo "placeholder for staging deployment"
-
-  deploy-production:
-    name: deploy-production
-    runs-on: ubuntu-latest
-    needs: [deploy-staging]
-    
-    steps:
-        - name: placeholder for production deployment
-          run: echo "placeholder for production deployment"
