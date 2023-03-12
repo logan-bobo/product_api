@@ -82,6 +82,7 @@ def health() -> Response:
     return make_response(jsonify(status="healthy"), 200)
 
 
+# supplier routes
 @app.route("/v1/suppliers", methods=["POST"])
 def create_supplier() -> Response:
     """
