@@ -1,3 +1,8 @@
+"""
+Test database models based on class instances
+"""
+
+
 def test_new_supplier(new_supplier):
     """
     GIVEN a Supplier model

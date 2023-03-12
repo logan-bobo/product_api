@@ -1,7 +1,9 @@
-import json
+"""
+Core application logica for product_api containing models and routes.
+"""
 
 from flask import Flask, Response, jsonify, make_response, request
-from flask_sqlalchemy import Model, SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 # Instantiate Flask and SQLAlchemy
 db = SQLAlchemy()
@@ -13,33 +15,58 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 # Initialize the app with the extension
 db.init_app(app)
 
-# As there are no stubs for flask_sqlalchemy we need to declare the type for db.Model here
-BaseModel: Model = db.Model
 
+class Supplier(db.Model):  # type: ignore # pylint: disable=too-few-public-methods
+    """
+    Used to create Suppliers representing a single database row
+    """
 
-class Supplier(BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), unique=True)
 
+    def __repr__(self):
+        return f"<Supplier {self.name}>"
 
-class Product(BaseModel):
+
+class Product(db.Model):  # type: ignore # pylint: disable=too-few-public-methods
+    """
+    Used to create Products representing a single database row
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), unique=True)
     price = db.Column(db.Float, nullable=False)
     supplier = db.ForeignKey(Supplier.id, nullable=False)
 
+    def __repr__(self):
+        return f"<Product {self.name}>"
 
-class Inventory(BaseModel):
+
+class Inventory(db.Model):  # type: ignore # pylint: disable=too-few-public-methods
+    """
+    Used to create an Inventory representing a database row
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40), unique=True)
     address = db.Column(db.String(100), unique=True)
 
+    def __repr__(self):
+        return f"<Inventory {self.name}>"
 
-class StoredInventory(BaseModel):
+
+class StoredInventory(db.Model):  # type: ignore # pylint: disable=too-few-public-methods
+    """
+    Used to create a StoredInventory to map products to inventories
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     inventory_id = db.ForeignKey(Inventory.id, nullable=False)
     product_id = db.ForeignKey(Product.id, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<StoredInventory {self.id}>"
 
 
 with app.app_context():
@@ -48,6 +75,10 @@ with app.app_context():
 
 @app.route("/v1/health", methods=["GET"])
 def health() -> Response:
+    """
+    The health endpoint that can be used to check the health on an instance
+    :return: Response
+    """
     return make_response(jsonify(status="healthy"), 200)
 
 
@@ -55,9 +86,6 @@ def health() -> Response:
 def create_supplier() -> Response:
     """
     Create a supplier by name with a POST reqeust containing JSON data in the following format.
-    {
-        "name":"foo"
-    }
     :return: Response
     """
     request_data = request.get_json()
@@ -80,19 +108,12 @@ def create_supplier() -> Response:
 def read_suppliers() -> Response:
     """
     Read all suppliers that are registered in JSON format.
-    {
-    "suppliers":{
-        "1":{
-            "name":"foo"
-        },
-        "2":{
-            "name":"bar"
-        }
-    }
     :return: Response
     """
-    supplier_data = db.session.scalars(db.select(Supplier).order_by(Supplier.id))
 
+    supplier_data = db.session.execute(
+        db.select(Supplier).order_by(Supplier.id)
+    ).scalars()
     suppliers: dict = {"suppliers": {}}
 
     for supplier in supplier_data:
@@ -104,21 +125,18 @@ def read_suppliers() -> Response:
 @app.route("/v1/suppliers/<int:supplier_id>")
 def read_supplier() -> Response:
     """
-    Read an individual supplier based on ID and be returned information about that supplier in JSON format.
-    {
-        "1": {
-            name: "foo"
-        }
-    }
+    Read an individual supplier based on ID.
     :return: Response
     """
 
     if request.view_args is not None:
         supplier_id: int = request.view_args["supplier_id"]
+    else:
+        return make_response(jsonify(message="supplier id not found"), 400)
 
-    supplier_data: Supplier = db.session.scalar(
+    supplier_data: Supplier = db.session.execute(
         db.select(Supplier).where(Supplier.id == supplier_id)
-    )
+    ).scalar()
 
     supplier = {supplier_data.id: {"name": supplier_data.name}}
 

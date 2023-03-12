@@ -1,3 +1,7 @@
+"""
+Test health endpoint of the flask application
+"""
+
 from tests.conftest import API_VERSION
 
 
