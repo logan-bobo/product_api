@@ -24,7 +24,7 @@ def client() -> Generator:
         yield testing_client
 
 
-@pytest.fixture()
+@pytest.fixture(name="supplier")
 def new_supplier() -> Supplier:
     """
     Return a Supplier instance with sensible defaults for testing
@@ -37,7 +37,7 @@ def new_supplier() -> Supplier:
     return supplier
 
 
-@pytest.fixture()
+@pytest.fixture(name="product")
 def new_product(supplier) -> Product:
     """
     Return a Product instance with sensible defaults for testing needs to take in a Supplier
@@ -53,7 +53,7 @@ def new_product(supplier) -> Product:
     return product
 
 
-@pytest.fixture()
+@pytest.fixture(name="inventory")
 def new_inventory() -> Inventory:
     """
     Return an Inventory instance with sensible defaults for testing
@@ -67,7 +67,7 @@ def new_inventory() -> Inventory:
     return inventory
 
 
-@pytest.fixture()
+@pytest.fixture(name="stored_inventory")
 def new_stored_inventory(inventory, product) -> StoredInventory:
     """
     Return an Inventory instance with sensible defaults for testing
