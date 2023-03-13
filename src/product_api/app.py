@@ -124,7 +124,7 @@ def read_suppliers() -> Response:
 
 
 @app.route("/v1/suppliers/<int:supplier_id>")
-def read_supplier() -> Response:
+def read_supplier(supplier_id) -> Response:
     """
     Read an individual supplier based on ID.
     :return: Response
@@ -133,11 +133,15 @@ def read_supplier() -> Response:
     if request.view_args is not None:
         supplier_id: int = request.view_args["supplier_id"]
     else:
-        return make_response(jsonify(message="supplier id not found"), 400)
+        return make_response(jsonify(message="invalid request to path must supply id"), 400)
 
     supplier_data: Supplier = db.session.execute(
         db.select(Supplier).where(Supplier.id == supplier_id)
     ).scalar()
+
+    if not supplier_data:
+        return make_response(jsonify(message=f"supplier {supplier_id} not found"), 400)
+
 
     supplier = {supplier_data.id: {"name": supplier_data.name}}
 
