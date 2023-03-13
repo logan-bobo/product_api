@@ -7,7 +7,7 @@ from typing import Generator
 
 import pytest
 
-from product_api.app import Inventory, Product, StoredInventory, Supplier, app
+from product_api.app import Inventory, Product, StoredInventory, Supplier, app, db
 
 API_VERSION = "v1"
 
@@ -21,7 +21,8 @@ def client() -> Generator:
     flask_app = app
 
     with flask_app.test_client() as testing_client:
-        yield testing_client
+        with flask_app.app_context():
+            yield testing_client
 
 
 @pytest.fixture(name="supplier")
