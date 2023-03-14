@@ -26,9 +26,20 @@ def client() -> Generator:
             yield testing_client
 
 
+@pytest.fixture(name="persisted_supplier")
+def persisted_supplier(supplier_instance):
+    db.drop_all()
+
+    db.create_all()
+
+    db.session.add(supplier_instance)
+
+    db.session.commit()
+
+
 # Unit fixtures
-@pytest.fixture(name="supplier")
-def new_supplier() -> Supplier:
+@pytest.fixture(name="supplier_instance")
+def supplier_instance() -> Supplier:
     """
     Return a Supplier instance with sensible defaults for testing
     :return: Supplier
@@ -40,24 +51,24 @@ def new_supplier() -> Supplier:
     return supplier
 
 
-@pytest.fixture(name="product")
-def new_product(supplier) -> Product:
+@pytest.fixture(name="product_instance")
+def product_instance(supplier_instance) -> Product:
     """
     Return a Product instance with sensible defaults for testing needs to take in a Supplier
-    :param supplier: Instance of Supplier
+    :param supplier_instance: Instance of Supplier
     :return: Product
     """
     product = Product(
         id=1,
         name="dev_test_cola",
         price=0.99,
-        supplier=supplier.id,
+        supplier=supplier_instance.id,
     )
     return product
 
 
-@pytest.fixture(name="inventory")
-def new_inventory() -> Inventory:
+@pytest.fixture(name="inventory_instance")
+def inventory_instance() -> Inventory:
     """
     Return an Inventory instance with sensible defaults for testing
     :return: Inventory
@@ -70,18 +81,18 @@ def new_inventory() -> Inventory:
     return inventory
 
 
-@pytest.fixture(name="stored_inventory")
-def new_stored_inventory(inventory, product) -> StoredInventory:
+@pytest.fixture(name="stored_inventory_instance")
+def stored_inventory_instance(inventory_instance, product_instance) -> StoredInventory:
     """
     Return an Inventory instance with sensible defaults for testing
-    :param inventory: an instance of Inventory
-    :param product: an instance of Product
+    :param inventory_instance: an instance of Inventory
+    :param product_instance: an instance of Product
     :return:
     """
     stored_inventory = StoredInventory(
         id=1,
-        inventory_id=inventory.id,
-        product_id=product.id,
+        inventory_id=inventory_instance.id,
+        product_id=product_instance.id,
         quantity=10,
     )
     return stored_inventory
