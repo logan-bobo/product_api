@@ -12,6 +12,7 @@ from product_api.app import Inventory, Product, StoredInventory, Supplier, app, 
 API_VERSION = "v1"
 
 
+# Integration fixtures
 @pytest.fixture()
 def client() -> Generator:
     """
@@ -25,6 +26,7 @@ def client() -> Generator:
             yield testing_client
 
 
+# Unit fixtures
 @pytest.fixture(name="supplier")
 def new_supplier() -> Supplier:
     """
