@@ -130,9 +130,7 @@ def read_supplier(supplier_id) -> Response:
     :return: Response
     """
 
-    if request.view_args is not None:
-        supplier_id: int = request.view_args["supplier_id"]
-    else:
+    if not supplier_id:
         return make_response(
             jsonify(message="invalid request to path must supply id"), 400
         )
