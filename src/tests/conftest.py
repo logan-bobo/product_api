@@ -13,7 +13,7 @@ API_VERSION = "v1"
 
 
 # Integration fixtures
-@pytest.fixture()
+@pytest.fixture(name="_client")
 def client() -> Generator:
     """
     Generates a flask test client to run tests against
@@ -26,16 +26,24 @@ def client() -> Generator:
             yield testing_client
 
 
-@pytest.fixture(name="_persisted_supplier")
-def write_supplier(_supplier_instance):
+@pytest.fixture(name="_clean_database")
+def clean_database(_client):
     """
-    Persist a supplier to the database for use in integration testing
-    :param _supplier_instance:
-    :return:
+    Provide a clean database instance all tables created and empty
+    :param _client:
     """
     db.drop_all()
 
     db.create_all()
+
+
+@pytest.fixture(name="_persisted_supplier")
+def write_supplier(_supplier_instance, _clean_database):
+    """
+    Persist a supplier to the database for use in integration testing
+    :param _clean_database: a clean database
+    :param _supplier_instance: a supplier instance
+    """
 
     db.session.add(_supplier_instance)
 
