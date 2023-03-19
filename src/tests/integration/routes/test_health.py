@@ -10,7 +10,7 @@ class TestHealth:
     Test class to encapsulate all health route tests
     """
 
-    def test_health_endpoint_returns_desired_message(self, _client):
+    def test_health_endpoint_returns_health_message(self, _client):
         """
         GIVEN the health endpoint
         WHEN an HTTP GET request is made to the root endpoint

@@ -1,9 +1,10 @@
 """
-Core application logica for product_api containing models and routes.
+Core application logic for product_api containing models and routes.
 """
 
 from flask import Flask, Response, jsonify, make_response, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import exc
 
 # Instantiate Flask and SQLAlchemy
 db = SQLAlchemy()
@@ -47,7 +48,7 @@ class Inventory(db.Model):  # type: ignore # pylint: disable=too-few-public-meth
     Used to create an Inventory representing a database row
     """
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.INTEGER, primary_key=True)
     name = db.Column(db.String(40), unique=True)
     address = db.Column(db.String(100), unique=True)
 
@@ -86,7 +87,7 @@ def health() -> Response:
 @app.route("/v1/suppliers", methods=["POST"])
 def create_supplier() -> Response:
     """
-    Create a supplier by name with a POST reqeust containing JSON data in the following format.
+    Create a supplier by name with a POST reqeust containing JSON including the supplier name
     :return: Response
     """
     request_data = request.get_json()
@@ -98,7 +99,14 @@ def create_supplier() -> Response:
 
     db.session.add(new_supplier)
 
-    db.session.commit()
+    try:
+        db.session.commit()
+
+    except exc.IntegrityError:
+        db.session.rollback()
+        return make_response(
+            jsonify(message="can not create the same supplier twice"), 400
+        )
 
     return make_response(
         jsonify(message=f"supplier {request_data['name']} created"), 200

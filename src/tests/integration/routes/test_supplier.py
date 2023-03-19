@@ -1,6 +1,7 @@
 """
 Test the supplier routes
 """
+
 from tests.conftest import API_VERSION
 
 
@@ -63,3 +64,17 @@ class TestSupplier:
             b'{"message":"supplier fanta_industries_inc created"}' in post_response.data
         )
         assert b'{"1":{"name":"fanta_industries_inc"}}' in get_response.data
+
+    def test_supplier_must_be_unique(
+        self, _client, _clean_database, _persisted_supplier
+    ):
+        """
+        GIVEN the supplier endpoint
+        WHEN an HTTP POST request is make to create a supplier but the name is not unique
+        THEN a IntegrityError will be caught and the user will be returned 400
+        """
+
+        post_response = _client.post(
+            f"/{API_VERSION}/suppliers", json={"name": "dev_test_supplier_one"}
+        )
+        assert b"can not create the same supplier twice" in post_response.data
